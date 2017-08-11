@@ -1,0 +1,52 @@
+body{
+	font-size: 1px;
+	font-family: "Roboto Mono";
+}
+#logincontainer{
+	height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+}
+#title{
+	text-align: center;
+	font-size: 70em;
+	font-weight: 700;
+	margin-top: 25vh;
+}
+#subtitle{
+    font-size: 30em;
+    margin-left: 20vw;
+    margin-right: 20vw;
+    text-align: center;
+    font-weight: 300;
+}
+#code{
+	font-size: 50em;
+    text-align: center;
+    font-weight: 400;
+}
+.red{
+	color: #d13030;
+}
+
+.animate-top {
+	position: relative;
+	-webkit-animation-name: animatetop;
+	-webkit-animation-duration: 2s;
+	-webkit-animation-fill-mode: forwards;
+	animation-name: animatetop;
+	animation-fill-mode: forwards;
+	animation-duration: 2s;
+}
+
+@-webkit-keyframes animatetop {
+	from { top:0vh; display: inherit; } 
+	to { top:-100vh; display: none; }
+}
+
+@keyframes animatetop { 
+	from { top:0vh; display: inherit; } 
+	to { top:-100vh; display: none; }
+}

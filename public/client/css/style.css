@@ -77,7 +77,9 @@ body{
 	position: relative;
 	-webkit-animation-name: animatetop;
 	-webkit-animation-duration: 2s;
+	-webkit-animation-fill-mode: forwards;
 	animation-name: animatetop;
+	animation-fill-mode: forwards;
 	animation-duration: 2s;
 }
 
@@ -89,10 +91,4 @@ body{
 @keyframes animatetop { 
 	from { top:0vh; display: inherit; } 
 	to { top:-100vh; display: none; }
-}
-
-.hide {
-	display: none;
-	transition-delay: 2s;
-	transition: all 0ms;
 }

@@ -1,9 +1,11 @@
 function TiltClient() {
+	this.noCode = true;
 	this.gameStarted = false;
 
 	this.init = function(){
 		this.io = io();
 		this.socket = io.connect();
+		this.noCode = true;
 		this.gameStarted = false;
 	}
 
@@ -17,13 +19,15 @@ function TiltClient() {
 
 	this.register = function(code){
 		this.showLoader();
-		if (!this.gameStarted){
+		if (this.noCode){
 			this.socket.emit('checkCode',code);
 			var t = this;
 			this.socket.on('addToGame', function(data){
-				if (!t.gameStarted){
+				console.log("contacted server");
+				if (t.noCode){
+					console.log(data);
 					if (data==1){
-						t.startGame();
+						t.startWaitingRoom();
 					} else {
 						t.failedToAdd();
 					}
@@ -34,12 +38,24 @@ function TiltClient() {
 	}
 
 	this.failedToAdd = function(){
+		//this.noCode = false;
 		throwError("Invalid Code");
+	}
+
+	this.startWaitingRoom = function(){
+		this.noCode = false;
+		document.getElementById("code").disabled = true;
+		this.showLoader();
+		throwError("Waiting for game to start");
+		var t = this;
+		this.socket.on('startGame',t.startGame());
 	}
 
 	this.startGame = function(){
 		console.log("game started");
 		this.gameStarted = true;
+		document.getElementById("logincontainer").className = "animate-top";
+		this.hideLoader();
 	}
 }
 
@@ -52,6 +68,7 @@ function start(){
 	t.register(code);
 }
 
+var checked = false;
 //Ancillary Functions
 function submitAndCheck() {
 	var e = document.getElementById("code");
@@ -59,8 +76,12 @@ function submitAndCheck() {
 		e.value=e.value.substring(0,6);
 	}
 	if (e.value.length==6){
-		start();
+		if (checked == false){
+			checked = true;
+			start();
+		}
 	} else if (e.value.length < 6){
+		checked = false;
 		throwError("");
 	}
 }

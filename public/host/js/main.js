@@ -6,12 +6,18 @@ function TiltHost() {
 		document.getElementById("code").innerHTML = code;
 		this.code = code;
 		console.log(this.socket);
+		var t = this;
+		this.socket.on('startGame',function(){t.startGame();})
 	}
 
 	this.registerForCode = function(){
 		this.socket.emit('registerForCode');
 		var t = this;
 		this.socket.on('newCode',function(code){t.receivedCode(code);});
+	}
+
+	this.startGame = function(){
+		document.getElementById("logincontainer").className = "animate-top";
 	}
 
 	this.init = function(){

@@ -6,9 +6,9 @@ exports.GameServer = function(socket){
 	this.codeChars = "0123456789";
 	this.socket = socket;
 
-	this.sendDirectMessage = function(socket,first,second){
+	this.sendDirectMessage = function(sock,first,second){
 		//console.log(this.socket.sockets);
-		this.socket.sockets.connected[socket.id].emit(first,second);
+		this.socket.sockets.connected[sock.id].emit(first,second);
 	}
 
 	this.isPresent = function(code){
@@ -47,6 +47,7 @@ exports.GameServer = function(socket){
 			f=this.games[code].addParticipant(client);
 		}
 		if (f==true){
+			client.join(code);
 			this.sendDirectMessage(client,'addToGame',1);
 		} else {
 			this.sendDirectMessage(client,'addToGame',0);
