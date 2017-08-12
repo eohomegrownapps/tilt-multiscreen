@@ -2,20 +2,20 @@ body{
 	font-size: 1px;
 	font-family: "Roboto Mono";
 }
-#logincontainer{
+.container{
 	height: 100vh;
     position: absolute;
     left: 0;
     top: 0;
     width: 100vw;
 }
-#title{
+.title{
 	text-align: center;
 	font-size: 70em;
 	font-weight: 700;
 	margin-top: 25vh;
 }
-#subtitle{
+.subtitle{
     font-size: 30em;
     margin-left: 20vw;
     margin-right: 20vw;

@@ -1,7 +1,7 @@
 body{
 	font-size: 1px;
 	font-family: "Roboto Mono";
-	background-color: #000;
+	/*background-color: #000;*/
 }
 #logincontainer{
 	height: 100vh;
@@ -72,7 +72,6 @@ body{
 	100% { transform: rotate(360deg); }
 }
 
-/* Add animation to "page content" */
 .animate-top {
 	position: relative;
 	-webkit-animation-name: animatetop;

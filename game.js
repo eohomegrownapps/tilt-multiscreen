@@ -1,7 +1,7 @@
 exports.Game = function(socket,code,GameServer) {
 	this.host;
 	this.clients = {};
-	this.socket; //this is io
+	this.socket = socket; //this is io
 	this.code;
 	this.maxParticipants = 1;
 	this.startParticipants = 1;
@@ -11,8 +11,9 @@ exports.Game = function(socket,code,GameServer) {
 	//this.GameServer;
 	//Just use GameServer
 
-	this.sendDirectMessage = function(socket,first,second){
-		this.sockets.socket(socket.id).emit(first,second);
+	this.sendDirectMessage = function(sock,first,second){
+		//console.log(this.socket.sockets);
+		this.socket.sockets.connected[sock.id].emit(first,second);
 	}
 
 	this.init = function(host){
@@ -22,13 +23,15 @@ exports.Game = function(socket,code,GameServer) {
 		//this.GameServer = GameServer;
 		//console.log(this.GameServer);
 		var t = this;
-		this.host.on('disconnect',t.quit);
+		this.host.on('disconnect',function(){t.quit(t)});
 	}
 
-	this.quit = function(){
+	this.quit = function(t){
 		console.log("game quit");
-		this.socket.to(code).emit('endGame');
-		GameServer.closeGame(this.code);
+		//console.log(this);
+		console.log(t.socket);
+		t.socket.to(code).emit('endGame');
+		GameServer.closeGame(t.code);
 		//TODO: add message sent to clients that game has quit / make clients go back to homepage
 		//TODO: when 0 players left, game quits
 	}
@@ -39,7 +42,8 @@ exports.Game = function(socket,code,GameServer) {
 			client.socket = socket;
 			this.clients[client.socket.id] = client;
 			var t = this;
-			client.socket.on('disconnect',function(){t.disconnectParticipant(client.socket.id)});
+			console.log(t);
+			client.socket.on('disconnect',function(){t.disconnectParticipant(t,client.socket.id)});
 			if (this.startParticipants!=-1){
 				if (Object.keys(this.clients).length==this.startParticipants){
 					this.startGame();
@@ -50,15 +54,24 @@ exports.Game = function(socket,code,GameServer) {
 		return false;
 	}
 
-	this.disconnectParticipant = function(id){
-		delete this.clients[id];
-		if (Object.keys(this.clients).length < this.minParticipants){
-			this.quit();
+	this.disconnectParticipant = function(t,id){
+		console.log(t);
+		delete t.clients[id];
+		if ((Object.keys(t.clients).length < t.minParticipants)&&t.socket!=null){
+			t.quit(t);
 		}
 	}
 
 	this.startGame = function(){
 		this.participantsCanBeAdded = false;
 		this.socket.to(code).emit('startGame');
+		var t = this;
+		console.log(this.clients);
+		this.clients[Object.keys(this.clients)[0]].socket.on('orientationEvent',function(evt){t.processControllerData(t,evt);})
+	}
+
+	this.processControllerData = function(t,evt){
+		//console.log(evt);
+		this.sendDirectMessage(this.host,'orientationData',evt);
 	}
 }

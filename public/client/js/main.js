@@ -1,3 +1,4 @@
+//TODO: implement endGame socket listener
 function TiltClient() {
 	this.noCode = true;
 	this.gameStarted = false;
@@ -56,6 +57,19 @@ function TiltClient() {
 		this.gameStarted = true;
 		document.getElementById("logincontainer").className = "animate-top";
 		this.hideLoader();
+		document.getElementById("gamecontainer").style.display = "inherit";
+		if (window.DeviceOrientationEvent){
+			var t = this;
+			window.addEventListener('deviceorientation', function(evt){t.handleDeviceOrientation(t,evt);}, false);
+		} else {
+			//TODO: implement device orientation failure case
+		}
+	}
+
+	this.handleDeviceOrientation = function(t,evt){
+		var abg = {alpha: evt.alpha, beta: evt.beta, gamma: evt.gamma};
+		console.log(abg);
+		t.socket.emit('orientationEvent',abg);
 	}
 }
 
