@@ -41,6 +41,15 @@ body{
 	animation-duration: 2s;
 }
 
+#arrow {
+	width: 2vh;
+	height: 60vh;
+	margin: auto;
+	margin-top: 5vh;
+	background: red;
+	transform-origin: 120% center;
+}
+
 @-webkit-keyframes animatetop {
 	from { top:0vh; display: inherit; } 
 	to { top:-100vh; display: none; }

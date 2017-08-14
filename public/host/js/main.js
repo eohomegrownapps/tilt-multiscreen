@@ -25,11 +25,10 @@ function TiltHost() {
 
 	this.handleDeviceOrientation = function(t,evt){
 		console.log(evt);
-		var b = -1*evt.beta+90;
-		if (b<0){
-			b+=360;
-		}
+		var b = evt;
+		console.log(b);
 		document.getElementById("data").innerHTML = "Angle: "+(Math.round(b * 100) / 100).toString();
+		document.getElementById("arrow").style.transform = "rotate("+(Math.round(b * 100) / 100).toString()+"deg)";
 	}
 
 	this.init = function(){
