@@ -32,7 +32,7 @@ body{
 }
 
 .animate-top {
-	position: relative;
+	/*position: relative;*/
 	-webkit-animation-name: animatetop;
 	-webkit-animation-duration: 2s;
 	-webkit-animation-fill-mode: forwards;
@@ -46,8 +46,8 @@ body{
 	height: 60vh;
 	margin: auto;
 	margin-top: 5vh;
-	background: red;
-	transform-origin: 120% center;
+	background: rgba(255, 0, 0, 0.4);
+	transform-origin: center 120%;
 }
 
 @-webkit-keyframes animatetop {

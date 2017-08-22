@@ -91,3 +91,27 @@ body{
 	from { top:0vh; display: inherit; } 
 	to { top:-100vh; display: none; }
 }
+
+#button {
+    font-size: 25em;
+    font-weight: 300;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    border-style: solid;
+    border-width: 2px;
+    margin-top: 20px;
+    border-color: #d13030;
+    padding-left: 5px;
+    padding-right: 5px;
+    color: #d13030;
+    background-color: #FFFFFF;
+}
+
+#button:hover {
+    background-color: #d13030 !important;
+    color: #ffffff !important;
+    cursor: pointer;
+    cursor: hand;
+}

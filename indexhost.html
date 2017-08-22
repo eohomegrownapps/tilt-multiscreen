@@ -7,12 +7,14 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+	<script src="host/js/renderer.js"></script>
 	<script src="host/js/main.js"></script>
 </head>
 <body>
+	<canvas id="canvas" style="display:none;"></canvas>
 	<div id="logincontainer" class="container">
 		<div id="title" class="title">tilt<span class="red">.</span></div>
-		<div id="subtitle" class="subtitle">visit tilt.tk/play and enter code</div>
+		<div id="subtitle" class="subtitle">visit tilt.ga/play and enter code</div>
 		<div id="code"></div>
 	</div>
 	<div id="gamecontainer" class="container" style="display: none;">

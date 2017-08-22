@@ -1,6 +1,7 @@
 function TiltHost() {
 	this.socket = null;
 	this.code = null;
+	this.renderer;
 
 	this.receivedCode = function(code){
 		document.getElementById("code").innerHTML = code;
@@ -19,6 +20,10 @@ function TiltHost() {
 	this.startGame = function(){
 		document.getElementById("logincontainer").className = "animate-top";
 		document.getElementById("gamecontainer").style.display = "inherit";
+		var canv = document.getElementById('canvas');
+		canv.style.display="inherit";
+		this.renderer = new Renderer(canv);
+		this.renderer.init();
 		var t = this;
 		this.socket.on('orientationData',function(evt){t.handleDeviceOrientation(t,evt);});
 	}

@@ -4,6 +4,8 @@
 	<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,100,300,100italic,300italic,400italic,500,500italic,700,700italic" rel="stylesheet" type="text/css">
 	<title>tilt.</title>
 	<link href="client/css/style.css" rel="stylesheet" type="text/css">
+	<script src="client/js/sleep.js"></script>
+	<script src="client/js/NoSleep.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 	<script src="client/js/sensor_fusion/three.min.js"></script>
@@ -14,6 +16,7 @@
     <script src="client/js/sensor_fusion/pose-predictor.js"></script>
     <script src="client/js/sensor_fusion/complementary-filter.js"></script>
     <script src="client/js/sensor_fusion/complementary-orientation.js"></script>
+    <script src="client/js/quaternion.js"></script>
 	<script src="client/js/main.js"></script>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
@@ -21,9 +24,10 @@
 	<div id="logincontainer">
 		<div id="title">tilt<span class="red">.</span></div>
 		<div id="subtitle">enter code</div>
-		<input id="code" type="text" name="code" maxlength="6" onkeypress="validate(event);" onkeyup="submitAndCheck();">
+		<input id="code" type="text" name="code" maxlength="6" onkeypress="validate(event);">
 		<div id="loader" style="display: none;"></div>
 		<div id="codeerror" class="error"></div>
+		<div id="button" onclick="submitAndCheck();">connect</div>
 	</div>
 	<div id="gamecontainer" style="display: none;">
 	</div>

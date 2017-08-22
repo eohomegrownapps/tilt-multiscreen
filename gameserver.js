@@ -7,8 +7,11 @@ exports.GameServer = function(socket){
 	this.socket = socket;
 
 	this.sendDirectMessage = function(sock,first,second){
-		//console.log(this.socket.sockets);
-		this.socket.sockets.connected[sock.id].emit(first,second);
+		try {
+			this.socket.sockets.connected[sock.id].emit(first,second);
+		} catch (err){
+			//console.log(err);
+		}
 	}
 
 	this.isPresent = function(code){

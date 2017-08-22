@@ -13,7 +13,11 @@ exports.Game = function(socket,code,GameServer) {
 
 	this.sendDirectMessage = function(sock,first,second){
 		//console.log(this.socket.sockets);
-		this.socket.sockets.connected[sock.id].emit(first,second);
+		try {
+			this.socket.sockets.connected[sock.id].emit(first,second);
+		} catch (err){
+			console.log(err);
+		}
 	}
 
 	this.init = function(host){
@@ -29,7 +33,7 @@ exports.Game = function(socket,code,GameServer) {
 	this.quit = function(t){
 		console.log("game quit");
 		//console.log(this);
-		console.log(t.socket);
+		//console.log(t.socket);
 		t.socket.to(code).emit('endGame');
 		GameServer.closeGame(t.code);
 		//TODO: add message sent to clients that game has quit / make clients go back to homepage
@@ -42,7 +46,7 @@ exports.Game = function(socket,code,GameServer) {
 			client.socket = socket;
 			this.clients[client.socket.id] = client;
 			var t = this;
-			console.log(t);
+			//console.log(t);
 			client.socket.on('disconnect',function(){t.disconnectParticipant(t,client.socket.id)});
 			if (this.startParticipants!=-1){
 				if (Object.keys(this.clients).length==this.startParticipants){
@@ -55,7 +59,7 @@ exports.Game = function(socket,code,GameServer) {
 	}
 
 	this.disconnectParticipant = function(t,id){
-		console.log(t);
+		//console.log(t);
 		delete t.clients[id];
 		if ((Object.keys(t.clients).length < t.minParticipants)&&t.socket!=null){
 			t.quit(t);
@@ -66,7 +70,7 @@ exports.Game = function(socket,code,GameServer) {
 		this.participantsCanBeAdded = false;
 		this.socket.to(code).emit('startGame');
 		var t = this;
-		console.log(this.clients);
+		//console.log(this.clients);
 		this.clients[Object.keys(this.clients)[0]].socket.on('orientationEvent',function(evt){t.processControllerData(t,evt);})
 	}
 
