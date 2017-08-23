@@ -11,10 +11,14 @@ exports.Game = function(socket,code,GameServer) {
 	//this.GameServer;
 	//Just use GameServer
 
-	this.sendDirectMessage = function(sock,first,second){
+	this.sendDirectMessage = function(sock,first,second,volatile=false){
 		//console.log(this.socket.sockets);
 		try {
-			this.socket.sockets.connected[sock.id].emit(first,second);
+			if (volatile){
+				this.socket.sockets.connected[sock.id].volatile.emit(first,second);
+			} else {
+				this.socket.sockets.connected[sock.id].emit(first,second);
+			}
 		} catch (err){
 			console.log(err);
 		}
@@ -76,6 +80,6 @@ exports.Game = function(socket,code,GameServer) {
 
 	this.processControllerData = function(t,evt){
 		//console.log(evt);
-		this.sendDirectMessage(this.host,'orientationData',evt);
+		this.sendDirectMessage(this.host,'orientationData',evt,true);
 	}
 }

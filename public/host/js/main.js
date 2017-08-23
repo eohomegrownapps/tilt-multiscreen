@@ -6,7 +6,7 @@ function TiltHost() {
 	this.receivedCode = function(code){
 		document.getElementById("code").innerHTML = code;
 		this.code = code;
-		console.log(this.socket);
+		//console.log(this.socket);
 		var t = this;
 		this.socket.on('startGame',function(){t.startGame();})
 	}
@@ -20,6 +20,7 @@ function TiltHost() {
 	this.startGame = function(){
 		document.getElementById("logincontainer").className = "animate-top";
 		document.getElementById("gamecontainer").style.display = "inherit";
+		document.getElementById("logincontainer").style.display = "none";
 		var canv = document.getElementById('canvas');
 		canv.style.display="inherit";
 		this.renderer = new Renderer(canv);
@@ -29,11 +30,12 @@ function TiltHost() {
 	}
 
 	this.handleDeviceOrientation = function(t,evt){
-		console.log(evt);
+		//console.log(evt);
 		var b = evt;
-		console.log(b);
+		//console.log(b);
 		document.getElementById("data").innerHTML = "Angle: "+(Math.round(b * 100) / 100).toString();
-		document.getElementById("arrow").style.transform = "rotate("+(Math.round(b * 100) / 100).toString()+"deg)";
+		//document.getElementById("arrow").style.transform = "rotate("+(Math.round(b * 100) / 100).toString()+"deg)";
+		t.renderer.updateOrientation(b);
 	}
 
 	this.init = function(){

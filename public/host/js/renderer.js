@@ -9,14 +9,19 @@ function Renderer(canvas) {
 	this.bg = "#fff";
 	this.size = 5;
 	this.xsize = 800;
-	this.ysize = 600;
+	this.ysize = 700;
 	this.zsize = 1200;
 	this.emptyspaceradius = 200;
 	this.circlex = 0;
 	this.circley = 0;
 	this.camerax = 0;
-	this.cameray = 50;
+	this.cameray = 0;
 	this.cameraz = 0;
+	this.bladeAngle = 0;
+	this.bladePos = {x:0,y:200};
+	this.bladeDims = {width:15,height:450};
+	this.bladeRotatePos = {x:0,y:400};
+	this.bladeColour = "rgba(255, 0, 0, 0.4)";
 
 	this.speed = 500;
 	this.lastUpdate = -1;
@@ -42,6 +47,29 @@ function Renderer(canvas) {
 		}
 		var z = (Math.random()*this.zsize)-this.zsize/2;
 		return {"x":x,"y":y,"z":z};
+	}
+
+	this.drawBlade = function(){
+		var HALF_WIDTH = this.canvas.width/2;
+		var HALF_HEIGHT = this.canvas.height/2;
+		var blx = this.bladePos.x-this.bladeDims.width/2+HALF_WIDTH;
+		var bly = this.bladePos.y+HALF_HEIGHT;
+		//console.log(blx);
+		//console.log(bly);
+		this.context.save();
+		this.context.translate(this.bladeRotatePos.x+HALF_WIDTH,this.bladeRotatePos.y+HALF_HEIGHT);
+		this.context.rotate(this.bladeAngle*Math.PI/180);
+		this.context.translate(-1*(this.bladeRotatePos.x+HALF_WIDTH),-1*(this.bladeRotatePos.y+HALF_HEIGHT));
+		this.context.beginPath();
+		this.context.fillStyle = this.bladeColour;
+		this.context.moveTo(blx,bly);
+		this.context.lineTo(blx,bly-this.bladeDims.height);
+		this.context.lineTo(blx+this.bladeDims.width,bly-this.bladeDims.height);
+		this.context.lineTo(blx+this.bladeDims.width,bly);
+		this.context.lineTo(blx,bly);
+		this.context.closePath();
+		this.context.fill();
+		this.context.restore();
 	}
 
 	this.drawPoint = function(point3d){
@@ -115,12 +143,19 @@ function Renderer(canvas) {
   		this.canvas.height = window.innerHeight;
 		this.context.fillStyle=this.bg;
 	  	this.context.fillRect(0,0, this.canvas.width, this.canvas.height);
+		
 		for (i=0; i<this.numPoints; i++) {
 			var point3d = this.points[i];
 			if (point3d.z>=-this.fov){
 				this.drawCircle(point3d); 
 			}
 		}
+
+		this.drawBlade();
+	}
+
+	this.updateOrientation = function(orientation){
+		this.bladeAngle = orientation;
 	}
 
 	this.init = function(){

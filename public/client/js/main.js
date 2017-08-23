@@ -67,7 +67,7 @@ function TiltClient() {
 		document.getElementById("gamecontainer").style.display = "inherit";
 		var t = this;
 		this.socket.on('endGame',t.endGame());
-		this.timer = setInterval(function(){t.handleDeviceOrientation(t);},50);
+		this.timer = setInterval(function(){t.handleDeviceOrientation(t);},70);
 		sleep.prevent();
 	}
 
@@ -94,6 +94,31 @@ function start(){
 
 var checked = false;
 //Ancillary Functions
+function toggleFullScreen() {
+  if (!document.fullscreenElement &&    // alternative standard method
+      !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement ) {  // current working methods
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+}
+
 function submitAndCheck() {
 	var noSleep = new NoSleep();
 	noSleep.enable();
@@ -105,6 +130,9 @@ function submitAndCheck() {
 	if (e.value.length==6){
 		if (checked == false){
 			checked = true;
+			toggleFullScreen();
+			//screen.lockOrientationUniversal = screen.lockOrientation || screen.mozLockOrientation || screen.msLockOrientation || screen.orientation.lock;
+			screen.orientation.lock("portrait-primary");
 			start();
 		}
 	} else if (e.value.length < 6){
