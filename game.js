@@ -76,10 +76,16 @@ exports.Game = function(socket,code,GameServer) {
 		var t = this;
 		//console.log(this.clients);
 		this.clients[Object.keys(this.clients)[0]].socket.on('orientationEvent',function(evt){t.processControllerData(t,evt);})
+		this.clients[Object.keys(this.clients)[0]].socket.on('hitEvent',function(evt){t.processHitData(t,evt);})
 	}
 
 	this.processControllerData = function(t,evt){
 		//console.log(evt);
 		this.sendDirectMessage(this.host,'orientationData',evt,true);
+	}
+
+	this.processHitData = function(t,evt){
+		//console.log(evt);
+		this.sendDirectMessage(this.host,'hit',evt,true);
 	}
 }

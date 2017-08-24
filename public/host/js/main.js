@@ -27,6 +27,7 @@ function TiltHost() {
 		this.renderer.init();
 		var t = this;
 		this.socket.on('orientationData',function(evt){t.handleDeviceOrientation(t,evt);});
+		this.socket.on('hit',function(evt){t.handleHit(t,evt);});
 	}
 
 	this.handleDeviceOrientation = function(t,evt){
@@ -36,6 +37,10 @@ function TiltHost() {
 		document.getElementById("data").innerHTML = "Angle: "+(Math.round(b * 100) / 100).toString();
 		//document.getElementById("arrow").style.transform = "rotate("+(Math.round(b * 100) / 100).toString()+"deg)";
 		t.renderer.updateOrientation(b);
+	}
+
+	this.handleHit = function(t,evt){
+		t.renderer.hit(t.renderer,evt);
 	}
 
 	this.init = function(){

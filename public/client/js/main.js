@@ -76,10 +76,15 @@ function TiltClient() {
 		var rotation = quatToEuler(q);
 		var r = eulerToAngle(rotation.x);
 		//var rotation = new THREE.Euler().setFromQuaternion(q);
-		console.log(r);
+		//console.log(r);
 		//var abg = {alpha: evt.do.alpha, beta: evt.do.beta, gamma: evt.do.gamma};
 		//console.log(abg);
 		t.socket.emit('orientationEvent',r);
+		//console.log(t.co.accelerometer);
+		if (Math.abs(t.co.accelerometer.x)>10){
+			console.log("hit");
+			t.socket.emit('hitEvent',t.co.accelerometer.x);
+		}
 	}
 }
 
