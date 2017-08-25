@@ -67,7 +67,7 @@ function TiltClient() {
 		document.getElementById("gamecontainer").style.display = "inherit";
 		var t = this;
 		this.socket.on('endGame',t.endGame());
-		this.timer = setInterval(function(){t.handleDeviceOrientation(t);},70);
+		this.timer = setInterval(function(){t.handleDeviceOrientation(t);},30);
 		sleep.prevent();
 	}
 

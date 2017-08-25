@@ -2,9 +2,7 @@ function Renderer(canvas) {
 	this.canvas = canvas;
 	this.context = canvas.getContext('2d');
 	this.fov = 250;
-	this.points = [];
-	this.obstacles = [];
-	this.pointDensity = 500;
+	this.pointDensity = 250;
 	this.divideBy = 1000000;
 	this.scaleFactor = 0.015625;
 	this.bg = "#fff";
@@ -22,22 +20,29 @@ function Renderer(canvas) {
 	this.cameray = 0;
 	this.cameraz = 0;
 	this.bladeAngle = 0;
+	this.minHitDistance = 200;
 	this.inHit = false;
+	this.increaseIncrease = 10;
 	this.bladePos = {x:0,y:350};
 	this.bladeDims = {width:20,height:600};
 	this.oldBladeDims = {width:20,height:600};
 	this.resizedBladeDims = {width:40,height:700};
+	this.bladeHitBox = {width:80,height:700};
 	this.resizedBladeColour = "rgba(255, 0, 0, 1)";
 	this.bladeRotatePos = {x:0,y:450};
 	this.oldBladeColour = "rgba(255, 0, 0, 0.4)";
 	this.bladeColour = "rgba(255, 0, 0, 0.4)";
 
+	this.points = [];
+	this.obstacles = [];
 	this.speed = 500;
 	this.obstacleMinSpeed = 300;
 	this.obstacleMaxSpeed = 800;
+	this.minObstacleTime = 1000;
+	this.maxObstacleTime = 2000;
 	this.lastUpdate = -1;
 	this.lastHitUpdate = -1;
-	this.hitTimer = 200;
+	this.hitTimer = 100;
 	this.numPoints;
 
 	this.getRandomInt = function(min, max) {
@@ -124,7 +129,31 @@ function Renderer(canvas) {
 		this.context.stroke(); 
 	}
 
-	this.drawCircle = function(point3d,obstacle=false){
+	this.calculateRotatedPoint = function(x,y,a,b,angle){
+		angle = angle/180*Math.PI;
+		var xp = (x-a)*Math.cos(angle)-(y-b)*Math.sin(angle)+a;
+		var yp = (y-b)*Math.cos(angle)+(x-a)*Math.sin(angle)+b;
+		return {"x":xp,"y":yp};
+	}
+
+	this.calculateIntersection = function(x,y,radius){
+		var HALF_WIDTH = this.canvas.width/2;
+		var HALF_HEIGHT = this.canvas.height/2;
+		var brotx = this.bladeRotatePos.x+HALF_WIDTH;
+		var broty = this.bladeRotatePos.y+HALF_HEIGHT;
+		var circlept = this.calculateRotatedPoint(x,y,brotx,broty,(360-this.bladeAngle));
+		//console.log(x);
+		//console.log(y);
+		//console.log(circlept);
+		var blx = this.bladePos.x-this.bladeHitBox.width/2+HALF_WIDTH;
+		var bly = this.bladePos.y+HALF_HEIGHT;
+		if (circlept.x>blx&&circlept.x<blx+this.bladeHitBox.width&&circlept.y<bly&&circlept.y>bly-this.bladeHitBox.height){
+			return true;
+		}
+		return false;
+	}
+
+	this.drawCircle = function(point3d,obstacle=false,j=-1){
 		var HALF_WIDTH = this.canvas.width/2;
 		var HALF_HEIGHT = this.canvas.height/2;
 		x3d = point3d.x-this.camerax;
@@ -133,6 +162,12 @@ function Renderer(canvas) {
 		var scale = this.fov/(this.fov+z3d);
 		var x2d = (x3d * scale) + HALF_WIDTH;	
 		var y2d = (y3d * scale) + HALF_HEIGHT;
+		if (obstacle&&this.inHit&&z3d<this.minHitDistance){
+			if (this.calculateIntersection(x2d,y2d,sizescale/2)){
+				console.log(true);
+				this.obstacles.splice(j,1);
+			}
+		}
 		this.context.beginPath();
 		var sizescale = scale*this.size;
 		if (obstacle){
@@ -150,6 +185,15 @@ function Renderer(canvas) {
 		}
 		var delta = Date.now()-t.lastUpdate;
 		var distanceToMove = delta/1000*t.speed;
+		var speedIncrease = delta/1000*t.increaseIncrease;
+		t.speed+=speedIncrease;
+		t.obstacleMinSpeed+=speedIncrease;
+		t.obstacleMaxSpeed+=speedIncrease;
+		t.increaseIncrease+=(0.1*delta/1000);
+		if (t.minObstacleTime>=300){
+			t.minObstacleTime-=10*delta/1000;
+			t.maxObstacleTime-=20*delta/1000;
+		}
 		for (i=0; i<t.numPoints; i++) {
 			var point3d = t.points[i]; 
 			z3d = point3d.z; 
@@ -187,7 +231,7 @@ function Renderer(canvas) {
 		for (var j = 0; j<this.obstacles.length; j++){
 			var point3d = this.obstacles[j];
 			if (point3d.z>=-this.fov){
-				this.drawCircle(point3d,true);
+				this.drawCircle(point3d,true,j);
 			}
 		}
 
@@ -241,7 +285,7 @@ function Renderer(canvas) {
 		var s = this.getRandomInt(this.obstacleMinSpeed,this.obstacleMaxSpeed);
 		var point = {x:pts.x,y:pts.y,z:pts.z,colour:this.obstaclecolour,speed:s};
 		this.obstacles.push(point);
-		var time = this.getRandomInt(1000,2000);
+		var time = this.getRandomInt(this.minObstacleTime,this.maxObstacleTime);
 		setTimeout(function(){t.newObstacle(t);},time);
 	}
 
