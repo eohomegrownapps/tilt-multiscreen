@@ -34,7 +34,6 @@ function TiltHost() {
 		//console.log(evt);
 		var b = evt;
 		//console.log(b);
-		document.getElementById("data").innerHTML = "Angle: "+(Math.round(b * 100) / 100).toString();
 		//document.getElementById("arrow").style.transform = "rotate("+(Math.round(b * 100) / 100).toString()+"deg)";
 		t.renderer.updateOrientation(b);
 	}

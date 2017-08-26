@@ -12,8 +12,8 @@ function Renderer(canvas) {
 	this.xsize = 800;
 	this.ysize = 700;
 	this.zsize = 1200;
-	this.emptyspaceradius = 200;
-	this.obstacleradius = 150;
+	this.emptyspaceradius = 250;
+	this.obstacleradius = 200;
 	this.circlex = 0;
 	this.circley = 0;
 	this.camerax = 0;
@@ -21,7 +21,6 @@ function Renderer(canvas) {
 	this.cameraz = 0;
 	this.bladeAngle = 0;
 	this.minHitDistance = 200;
-	this.inHit = false;
 	this.increaseIncrease = 10;
 	this.bladePos = {x:0,y:350};
 	this.bladeDims = {width:20,height:600};
@@ -32,7 +31,9 @@ function Renderer(canvas) {
 	this.bladeRotatePos = {x:0,y:450};
 	this.oldBladeColour = "rgba(255, 0, 0, 0.4)";
 	this.bladeColour = "rgba(255, 0, 0, 0.4)";
+	this.best = 0;
 
+	this.inHit = false;
 	this.points = [];
 	this.obstacles = [];
 	this.speed = 500;
@@ -43,7 +44,10 @@ function Renderer(canvas) {
 	this.lastUpdate = -1;
 	this.lastHitUpdate = -1;
 	this.hitTimer = 100;
+	this.score = 0;
 	this.numPoints;
+	this.animationFrame;
+	this.currentTimeout;
 
 	this.getRandomInt = function(min, max) {
 	    return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -145,9 +149,9 @@ function Renderer(canvas) {
 		//console.log(x);
 		//console.log(y);
 		//console.log(circlept);
-		var blx = this.bladePos.x-this.bladeHitBox.width/2+HALF_WIDTH;
-		var bly = this.bladePos.y+HALF_HEIGHT;
-		if (circlept.x>blx&&circlept.x<blx+this.bladeHitBox.width&&circlept.y<bly&&circlept.y>bly-this.bladeHitBox.height){
+		var blx = this.bladePos.x-this.bladeHitBox.width/2-radius+HALF_WIDTH;
+		var bly = this.bladePos.y+HALF_HEIGHT+radius;
+		if (circlept.x>blx&&circlept.x<blx+this.bladeHitBox.width+radius&&circlept.y<bly&&circlept.y>bly-radius-this.bladeHitBox.height){
 			return true;
 		}
 		return false;
@@ -162,20 +166,35 @@ function Renderer(canvas) {
 		var scale = this.fov/(this.fov+z3d);
 		var x2d = (x3d * scale) + HALF_WIDTH;	
 		var y2d = (y3d * scale) + HALF_HEIGHT;
-		if (obstacle&&this.inHit&&z3d<this.minHitDistance){
-			if (this.calculateIntersection(x2d,y2d,sizescale/2)){
-				console.log(true);
-				this.obstacles.splice(j,1);
-			}
-		}
-		this.context.beginPath();
 		var sizescale = scale*this.size;
 		if (obstacle){
 			sizescale=scale*this.obstaclesize;
 		}
+		if (obstacle&&this.inHit&&z3d<this.minHitDistance){
+			if (this.calculateIntersection(x2d,y2d,sizescale/2)){
+				console.log(true);
+				this.score++;
+				document.getElementById("score").innerHTML = "Score: "+this.score.toString();
+				this.obstacles.splice(j,1);
+			}
+		}
+		this.context.beginPath();
 		this.context.arc(x2d, y2d, sizescale/2, 0, 2 * Math.PI, false);
 		this.context.fillStyle = point3d.colour;
 		this.context.fill();
+	}
+
+	this.gameOver = function(){
+		cancelAnimationFrame(this.animationFrame);
+		clearTimeout(this.currentTimeout);
+		this.context.fillStyle=this.obstaclecolour;
+	  	this.context.fillRect(0,0, this.canvas.width, this.canvas.height);
+	  	if (this.score>this.best){
+	  		this.best = this.score;
+	  		document.getElementById("best").innerHTML = "Best: "+this.best.toString();
+	  	}
+	  	var t = this;
+	  	setTimeout(function(){t.init();},100);
 	}
 
 	this.update = function(t){
@@ -191,8 +210,8 @@ function Renderer(canvas) {
 		t.obstacleMaxSpeed+=speedIncrease;
 		t.increaseIncrease+=(0.1*delta/1000);
 		if (t.minObstacleTime>=300){
-			t.minObstacleTime-=10*delta/1000;
-			t.maxObstacleTime-=20*delta/1000;
+			t.minObstacleTime-=50*delta/1000;
+			t.maxObstacleTime-=100*delta/1000;
 		}
 		for (i=0; i<t.numPoints; i++) {
 			var point3d = t.points[i]; 
@@ -208,11 +227,15 @@ function Renderer(canvas) {
 			var distanceToMove = delta/1000*point3d.speed;
 			z3d-=distanceToMove;  
 			point3d.z = z3d; 
-			if(z3d<-t.fov) t.obstacles.splice(j,1);
+			if(z3d<-t.fov){
+				t.obstacles.splice(j,1);
+				t.gameOver();
+				return;
+			}
 		}
 		t.render();
 		t.lastUpdate = Date.now();
-		requestAnimationFrame(function(){t.update(t)});
+		t.animationFrame = requestAnimationFrame(function(){t.update(t)});
 	}
 
 	this.render = function(){
@@ -286,17 +309,31 @@ function Renderer(canvas) {
 		var point = {x:pts.x,y:pts.y,z:pts.z,colour:this.obstaclecolour,speed:s};
 		this.obstacles.push(point);
 		var time = this.getRandomInt(this.minObstacleTime,this.maxObstacleTime);
-		setTimeout(function(){t.newObstacle(t);},time);
+		this.currentTimeout = setTimeout(function(){t.newObstacle(t);},time);
 	}
 
 	this.init = function(){
+		this.inHit = false;
+		this.points = [];
+		this.obstacles = [];
+		this.speed = 500;
+		this.obstacleMinSpeed = 300;
+		this.obstacleMaxSpeed = 800;
+		this.minObstacleTime = 1000;
+		this.maxObstacleTime = 2000;
+		this.lastUpdate = -1;
+		this.lastHitUpdate = -1;
+		this.hitTimer = 100;
+		this.score = 0;
 		this.numPoints = this.pointDensity*this.xsize*this.ysize*this.zsize/this.divideBy*this.scaleFactor;
 		this.initPoints(this.numPoints);
+		document.getElementById("score").innerHTML = "Score: "+this.score.toString();
+		document.getElementById("best").innerHTML = "Best: "+this.best.toString();
 		//var t = this;
 		//var loop = setInterval(function(){t.render();}, 50);
 		var t = this;
-		requestAnimationFrame(function(){t.update(t)});
-		setTimeout(function(){t.newObstacle(t);},this.getRandomInt(1000,2000));
+		this.animationFrame = requestAnimationFrame(function(){t.update(t)});
+		this.currentTimeout = setTimeout(function(){t.newObstacle(t);},this.getRandomInt(1000,2000));
 	}
 }
 

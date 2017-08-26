@@ -30,6 +30,11 @@
 		<div id="button" onclick="submitAndCheck();">connect</div>
 	</div>
 	<div id="gamecontainer" style="display: none;">
+		<div id="subtitle" style="margin-top: 10vh;margin-left:5vw;margin-right:5vw;font-size: 20em;"><p>Hold your phone upright with the thin edge pointing towards the screen.</p><p>To rotate the blade, rotate your phone left and right.</p><p>Destroy the orbs by swinging your phone down.</p><p>Don't let them reach you.</p><p style="margin-top: 10vh;">Which direction is the screen facing?</p></div>
+		<div class="btn-group">
+			<button id="l" onclick="toggle(false);" class="selected">Left</button>
+			<button id="r" onclick="toggle(true);">Right</button>
+		</div>
 	</div>
 </body>
 </html>

@@ -4,6 +4,7 @@ function TiltClient() {
 	this.gameStarted = false;
 	this.timer;
 	this.renderer;
+	this.left = false;
 
 	this.init = function(){
 		this.io = io();
@@ -75,6 +76,12 @@ function TiltClient() {
 		var q = t.co.getOrientation();
 		var rotation = quatToEuler(q);
 		var r = eulerToAngle(rotation.x);
+		if (this.left){
+			r=360-r;
+		}
+		if (r==360){
+			r=0;
+		}
 		//var rotation = new THREE.Euler().setFromQuaternion(q);
 		//console.log(r);
 		//var abg = {alpha: evt.do.alpha, beta: evt.do.beta, gamma: evt.do.gamma};
@@ -154,5 +161,16 @@ function validate(e) {
 	document.getElementById("code").value = document.getElementById("code").value.replace(/[^0-9]/g, '');
 	if (isNaN(parseInt(String.fromCharCode(e.keyCode), 10))){
 		e.preventDefault();
+	}
+}
+
+function toggle(left){
+	t.left = left;
+	if (left){
+		document.getElementById("r").className = "selected";
+		document.getElementById("l").className = "";
+	} else {
+		document.getElementById("l").className = "selected";
+		document.getElementById("r").className = "";
 	}
 }
