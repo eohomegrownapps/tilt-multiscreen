@@ -10,10 +10,10 @@ function Renderer(canvas) {
 	this.obstaclesize = 20;
 	this.obstaclecolour = "#d13030";
 	this.xsize = 800;
-	this.ysize = 700;
+	this.ysize = 800;
 	this.zsize = 1200;
-	this.emptyspaceradius = 250;
-	this.obstacleradius = 200;
+	this.emptyspaceradius = 350;
+	this.obstacleradius = 350;
 	this.circlex = 0;
 	this.circley = 0;
 	this.camerax = 0;
